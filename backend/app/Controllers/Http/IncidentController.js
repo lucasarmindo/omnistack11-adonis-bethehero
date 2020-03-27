@@ -1,6 +1,7 @@
 'use strict'
 
 const Incident = use('App/Models/Incident')
+const Database = use('Database')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -22,11 +23,36 @@ class IncidentController {
    */
   async index({ request, response }) {
     const { page } = request.all()
-    const incidents = await Incident.query()
-      .with('ong')
+
+    const incidents = await Database
+      .select([
+        'incidents.title',
+        'incidents.description',
+        'incidents.value',
+        'incidents.ong_id',
+        'ongs.name',
+        'ongs.email',
+        'ongs.whatsapp',
+        'ongs.city',
+        'ongs.uf',
+      ])
+      .table('incidents')
+      .innerJoin('ongs', 'ongs.id', 'incidents.ong_id')
       .paginate(page, 5)
 
-    response.header('X-Total-Count', incidents.pages.total)
+    // const incidents = await Incident
+    //   .query()
+    //   .select([
+    //     'incidents.title',
+    //     'incidents.description',
+    //     'incidents.value',
+    //     'incidents.ong_id',
+    //   ])
+    //   .with('ongs')
+    //   .paginate(page, 5)
+
+
+    response.header('X-Total-Count', incidents.total)
     return incidents
   }
 

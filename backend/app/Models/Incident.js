@@ -4,7 +4,7 @@
 const Model = use('Model')
 
 class Incident extends Model {
-  ong() {
+  ongs() {
     return this.belongsTo('App/Models/Ong')
   }
 }
